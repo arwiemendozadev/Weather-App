@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
 using WeatherApp.Models;
 
 namespace WeatherApp.Services;
@@ -6,11 +7,14 @@ namespace WeatherApp.Services;
 public class OpenMeteoService : IWeatherService
 {
     private readonly HttpClient _http;
+    private readonly IMemoryCache _cache;
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     private const string ForecastBase = "https://api.open-meteo.com/v1/forecast";
 
-    public OpenMeteoService(HttpClient http)
+    public OpenMeteoService(HttpClient http, IMemoryCache cache)
     {
         _http = http;
+        _cache = cache;
     }
 
     public async Task<CurrentWeather> GetCurrentWeatherAsync(string city)
@@ -27,6 +31,10 @@ public class OpenMeteoService : IWeatherService
         var nzCity = NzCities.All.FirstOrDefault(c =>
             c.Name.Equals(city, StringComparison.OrdinalIgnoreCase))
             ?? throw new ArgumentException($"Unknown NZ city: {city}");
+
+        var cacheKey = $"forecast:{nzCity.Name}:{days}";
+        if (_cache.TryGetValue(cacheKey, out WeatherForecast? cached))
+            return cached!;
 
         var url = $"{ForecastBase}?latitude={nzCity.Latitude}&longitude={nzCity.Longitude}" +
                   $"&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum" +
@@ -54,7 +62,9 @@ public class OpenMeteoService : IWeatherService
             WeatherCode = codes[i],
         }).ToList();
 
-        return new WeatherForecast { City = nzCity.Name, Daily = forecastDays };
+        var result = new WeatherForecast { City = nzCity.Name, Daily = forecastDays };
+        _cache.Set(cacheKey, result, CacheDuration);
+        return result;
     }
 
     public async Task<IEnumerable<CurrentWeather>> GetAllCitiesCurrentWeatherAsync()
@@ -65,6 +75,10 @@ public class OpenMeteoService : IWeatherService
 
     private async Task<CurrentWeather> FetchCurrentAsync(NzCity city)
     {
+        var cacheKey = $"current:{city.Name}";
+        if (_cache.TryGetValue(cacheKey, out CurrentWeather? cached))
+            return cached!;
+
         var url = $"{ForecastBase}?latitude={city.Latitude}&longitude={city.Longitude}" +
                   "&current=temperature_2m,apparent_temperature,relative_humidity_2m," +
                   "precipitation,weather_code,wind_speed_10m,wind_direction_10m" +
@@ -77,7 +91,7 @@ public class OpenMeteoService : IWeatherService
         using var doc = JsonDocument.Parse(json);
         var current = doc.RootElement.GetProperty("current");
 
-        return new CurrentWeather
+        var result = new CurrentWeather
         {
             City = city.Name,
             Latitude = city.Latitude,
@@ -91,5 +105,7 @@ public class OpenMeteoService : IWeatherService
             WindDirection = current.GetProperty("wind_direction_10m").GetInt32(),
             ObservedAt = DateTime.Parse(current.GetProperty("time").GetString()!),
         };
+        _cache.Set(cacheKey, result, CacheDuration);
+        return result;
     }
 }

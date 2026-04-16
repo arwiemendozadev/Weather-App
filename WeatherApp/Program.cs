@@ -9,6 +9,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new() { Title = "NZ Weather API", Version = "v1" });
 });
 
+builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient<IWeatherService, OpenMeteoService>();
 
 var app = builder.Build();
