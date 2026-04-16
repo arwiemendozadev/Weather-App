@@ -1,0 +1,37 @@
+@model IEnumerable<WeatherApp.Models.CurrentWeather>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="mb-4 fw-bold">New Zealand Weather Dashboard</h2>
+<p class="text-muted mb-4">Live conditions across NZ cities &mdash; updated in real time via Open-Meteo.</p>
+
+<div class="row g-4">
+    @foreach (var city in Model)
+    {
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+            <a asp-action="City" asp-route-name="@city.City" class="text-decoration-none text-dark">
+                <div class="card weather-card h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="fw-bold mb-0">@city.City</h5>
+                            <small class="text-muted">@city.WeatherDescription</small>
+                        </div>
+                        <span class="icon-big">@city.WeatherIcon</span>
+                    </div>
+                    <div class="mt-3 temp-big text-primary">@city.TemperatureCelsius.ToString("0.0")&deg;C</div>
+                    <div class="text-muted small mt-1">Feels like @city.ApparentTemperatureCelsius.ToString("0.0")&deg;C</div>
+                    <hr />
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>&#128167; @city.PrecipitationMm mm</span>
+                        <span>&#128168; @city.RelativeHumidity%</span>
+                        <span>&#127788; @city.WindSpeedKph km/h</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                        Observed: @city.ObservedAt.ToString("HH:mm")
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>

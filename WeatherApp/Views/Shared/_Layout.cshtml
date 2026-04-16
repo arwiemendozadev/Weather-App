@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NZ Weather</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/WeatherApp.styles.css" asp-append-version="true" />
+    <style>
+        body { background-color: #f0f4f8; }
+        .navbar { background: linear-gradient(135deg, #1a73e8, #0d47a1) !important; }
+        .navbar-brand, .nav-link { color: #fff !important; }
+        .weather-card {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            transition: transform .15s;
+        }
+        .weather-card:hover { transform: translateY(-4px); }
+        .temp-big { font-size: 3rem; font-weight: 700; }
+        .icon-big { font-size: 3rem; }
+        .forecast-day { border-radius: 12px; background: #fff; padding: 12px; text-align: center; }
+        footer { background: #1a73e8; color: #fff; margin-top: 2rem; padding: 1rem 0; }
+        footer a { color: #cfe2ff; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                    &#127464;&#127483; NZ Weather
+                </a>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/swagger">API Docs</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            NZ Weather &mdash; powered by <a href="https://open-meteo.com" target="_blank" class="text-white">Open-Meteo</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

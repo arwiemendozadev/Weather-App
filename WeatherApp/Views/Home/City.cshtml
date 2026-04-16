@@ -1,0 +1,67 @@
+@model WeatherApp.Models.CurrentWeather
+@using WeatherApp.Models
+@{
+    ViewData["Title"] = Model.City;
+    var forecast = (WeatherForecast)ViewBag.Forecast;
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-outline-primary btn-sm">&larr; Back to Dashboard</a>
+</div>
+
+<div class="card weather-card p-4 mb-4">
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <div style="font-size:5rem;">@Model.WeatherIcon</div>
+        </div>
+        <div class="col">
+            <h2 class="fw-bold mb-0">@Model.City</h2>
+            <div class="text-muted">@Model.WeatherDescription</div>
+            <div class="temp-big text-primary mt-2">@Model.TemperatureCelsius.ToString("0.0")&deg;C</div>
+            <div class="text-muted">Feels like @Model.ApparentTemperatureCelsius.ToString("0.0")&deg;C</div>
+        </div>
+        <div class="col-md-4">
+            <table class="table table-sm mb-0">
+                <tbody>
+                    <tr>
+                        <td class="text-muted">Humidity</td>
+                        <td class="fw-bold">@Model.RelativeHumidity%</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Precipitation</td>
+                        <td class="fw-bold">@Model.PrecipitationMm mm</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Wind</td>
+                        <td class="fw-bold">@Model.WindSpeedKph km/h &commat; @Model.WindDirection&deg;</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Observed</td>
+                        <td class="fw-bold">@Model.ObservedAt.ToString("HH:mm")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Coordinates</td>
+                        <td class="fw-bold small">@Model.Latitude.ToString("F4"), @Model.Longitude.ToString("F4")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<h4 class="fw-bold mb-3">7-Day Forecast</h4>
+<div class="row g-3">
+    @foreach (var day in forecast.Daily)
+    {
+        <div class="col">
+            <div class="forecast-day shadow-sm">
+                <div class="fw-bold">@day.Date.ToString("ddd")</div>
+                <div class="text-muted small">@day.Date.ToString("d MMM")</div>
+                <div style="font-size:2rem;">@day.WeatherIcon</div>
+                <div class="fw-bold text-danger">@day.MaxTemperatureCelsius.ToString("0")&deg;</div>
+                <div class="text-primary">@day.MinTemperatureCelsius.ToString("0")&deg;</div>
+                <div class="text-muted small mt-1">@day.PrecipitationSumMm mm</div>
+            </div>
+        </div>
+    }
+</div>
