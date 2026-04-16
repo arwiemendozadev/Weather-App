@@ -1,6 +1,6 @@
 # NZ Weather App
 
-A weather dashboard and REST API for New Zealand cities, built with ASP.NET Core. Live weather data is fetched from [Open-Meteo](https://open-meteo.com) — no API key required.
+A weather dashboard and REST API for New Zealand cities, built with ASP.NET Core. Live weather data is fetched from [Open-Meteo](https://open-meteo.com).
 
 ## Stack
 
